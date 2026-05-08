@@ -42,17 +42,17 @@
       </div>
     </a>
 
-    <!-- INFERNO -->
-    <div class="map-card disabled">
-      <div class="wip-band">Soon</div>
-      <img class="map-thumb" src="map_pics/CS2-Mirage-Callout-Map.jpg" alt="Inferno" />
+    <!-- INFERNO — active -->
+    <a href="inferno.html" class="map-card" id="card-inferno">
+      <img class="map-thumb" src="map_pics/CS2-Inferno-Callout-Map.jpg" alt="Inferno" />
       <div class="map-card-overlay"></div>
+      <div class="map-count" id="inferno-count">— Utilities</div>
       <div class="map-card-body">
         <div class="map-tag">Mediterranean</div>
         <div class="map-name">Inferno</div>
-        <div class="map-status soon">○ Coming Soon</div>
+        <div class="map-status available">● Available</div>
       </div>
-    </div>
+    </a>
 
     <!-- ANCIENT -->
     <div class="map-card disabled">
@@ -114,12 +114,16 @@
 
 <script src="scripts/store.js"></script>
 <script>
-  // Update Mirage utility count badge from localStorage
   (function () {
-    const spots = Store.getHotspots('mirage');
-    const total = spots.reduce((n, s) => n + (s.utilities || []).length, 0);
-    const el = document.getElementById('mirage-count');
-    if (el) el.textContent = total + (total === 1 ? ' Utility' : ' Utilities');
+    [
+      { id: 'mirage',  elId: 'mirage-count'  },
+      { id: 'inferno', elId: 'inferno-count' },
+    ].forEach(function(m) {
+      const spots = Store.getHotspots(m.id);
+      const total = spots.reduce((n, s) => n + (s.utilities || []).length, 0);
+      const el = document.getElementById(m.elId);
+      if (el) el.textContent = total + (total === 1 ? ' Utility' : ' Utilities');
+    });
   })();
 </script>
 </body>

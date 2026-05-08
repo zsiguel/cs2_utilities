@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inferno — CS2 Utility Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles/base.css" />
+  <link rel="stylesheet" href="styles/mirage.css" />
+</head>
+<body>
+<div class="shell">
+
+  <div class="topbar">
+    <a href="index.html" class="back-btn">
+      <svg class="back-arrow" viewBox="0 0 16 16">
+        <polyline points="10,3 5,8 10,13"/>
+      </svg>
+      Maps
+    </a>
+    <div class="topbar-divider"></div>
+    <div>
+      <div class="topbar-title"><span>Inferno</span> — Utility Guide</div>
+      <div class="topbar-sub">Hover a hotspot to browse utilities</div>
+    </div>
+
+    <div class="topbar-spacer"></div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--smoke-clr)"></div>Smoke</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--flash-clr)"></div>Flash</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--molly-clr)"></div>Molotov</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--nade-clr)"></div>Nade</div>
+    </div>
+
+    <div class="topbar-divider"></div>
+    <a href="admin.html" class="admin-link">⚙ Admin</a>
+  </div>
+
+  <div class="map-wrapper" id="map-wrapper">
+    <img id="map-img" data-map-id="inferno" src="map_pics/CS2-Inferno-Callout-Map.jpg" alt="Inferno map" draggable="false" />
+  </div>
+
+  <div class="statusbar">
+    <div class="status-pill">
+      <div class="status-live-dot"></div>
+      Inferno
+    </div>
+    <div class="status-divider"></div>
+    <div class="status-pill" id="util-count-pill">Loading…</div>
+    <div class="status-divider"></div>
+    <div class="status-hint">
+      Hover a <strong style="color:var(--gold)">●</strong> hotspot, then click a utility to open its guide
+    </div>
+  </div>
+
+</div>
+
+<script src="scripts/store.js"></script>
+<script src="scripts/mirage.js"></script>
+</body>
+</html>

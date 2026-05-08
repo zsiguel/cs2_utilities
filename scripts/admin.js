@@ -8,7 +8,7 @@
   /* ── Map registry — add new maps here ──────────────────────── */
   const MAPS = [
     { id: 'mirage',  label: 'Mirage',  tag: 'Dust Belt',      img: 'map_pics/CS2-Mirage-Callout-Map.jpg', viewHref: 'mirage.html', active: true  },
-    { id: 'inferno', label: 'Inferno', tag: 'Mediterranean',   img: 'map_pics/CS2-Mirage-Callout-Map.jpg', viewHref: 'inferno.html', active: false },
+    { id: 'inferno', label: 'Inferno', tag: 'Mediterranean',   img: 'map_pics/CS2-Inferno-Callout-Map.jpg', viewHref: 'inferno.html', active: true  },
     { id: 'ancient', label: 'Ancient', tag: 'Jungle',          img: 'map_pics/CS2-Mirage-Callout-Map.jpg', viewHref: 'ancient.html', active: false },
     { id: 'nuke',    label: 'Nuke',    tag: 'Industrial',      img: 'map_pics/CS2-Mirage-Callout-Map.jpg', viewHref: 'nuke.html',    active: false },
     { id: 'dust2',   label: 'Dust 2',  tag: 'Dust Belt',       img: 'map_pics/CS2-Mirage-Callout-Map.jpg', viewHref: 'dust2.html',   active: false },

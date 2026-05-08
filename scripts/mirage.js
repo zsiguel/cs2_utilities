@@ -3,8 +3,8 @@
    ============================================================ */
 
 (function () {
-  const MAP_ID     = 'mirage';
   const mapImg     = document.getElementById('map-img');
+  const MAP_ID     = mapImg.dataset.mapId || 'mirage';
   const mapWrapper = document.getElementById('map-wrapper');
   const countPill  = document.getElementById('util-count-pill');
 
