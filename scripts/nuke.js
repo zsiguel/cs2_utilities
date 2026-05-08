@@ -20,8 +20,9 @@ import Store from "./store.js";
 
   /* Fixed overlay for submenus */
   const subOverlay = document.createElement('div');
-  subOverlay.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:100;';
-  document.body.appendChild(subOverlay);
+  subOverlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2147483647;';
+  // Append to <html> not <body> — more reliable on GitHub Pages / hosted environments
+  document.documentElement.appendChild(subOverlay);
 
   /* ── Position helper ────────────────────────────────────────── */
   function activeImg() {
@@ -111,8 +112,8 @@ import Store from "./store.js";
       let hideTimer = null;
       function positionAndShow() {
         const bRect = btn.getBoundingClientRect();
-        const vW    = window.innerWidth;
-        const vH    = window.innerHeight;
+        const vW    = document.documentElement.clientWidth;
+        const vH    = document.documentElement.clientHeight;
 
         sub.style.top    = '-9999px';
         sub.style.left   = '-9999px';
