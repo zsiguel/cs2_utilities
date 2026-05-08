@@ -1,0 +1,100 @@
+/* ============================================================
+   nuke.css — layer toggle + fade transition for Nuke page
+   Loaded in addition to mirage.css
+   ============================================================ */
+
+/* ── Two images stacked, fade between them ─────────────────── */
+.nuke-layer {
+  position: absolute;
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  display: block;
+  filter: saturate(.75) brightness(.85);
+  user-select: none;
+  -webkit-user-drag: none;
+  opacity: 0;
+  transition: opacity .45s ease;
+  /* override mirage.css #map-img positioning */
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.nuke-layer.active-layer { opacity: 1; }
+
+/* hotspots also fade with the layer */
+.hotspot {
+  transition: opacity .45s ease;
+}
+.hotspot.layer-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Layer toggle buttons ───────────────────────────────────── */
+.layer-toggle {
+  display: flex;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.layer-btn {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .35rem .9rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  transition: background .15s, color .15s;
+  white-space: nowrap;
+}
+
+.layer-btn + .layer-btn {
+  border-left: 1px solid var(--border);
+}
+
+.layer-btn:hover {
+  color: var(--text-mid);
+  background: rgba(255,255,255,.04);
+}
+
+.layer-btn.active {
+  background: var(--gold-glow);
+  color: var(--gold);
+}
+
+.layer-btn svg {
+  flex-shrink: 0;
+}
+
+/* Admin nuke toggle (reused in admin editor) */
+.admin-layer-toggle {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--border);
+  margin-bottom: .8rem;
+}
+
+.admin-layer-btn {
+  flex: 1;
+  padding: .4rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  transition: background .15s, color .15s;
+}
+.admin-layer-btn + .admin-layer-btn { border-left: 1px solid var(--border); }
+.admin-layer-btn.active { background: var(--gold-glow); color: var(--gold); }

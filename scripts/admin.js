@@ -9,12 +9,20 @@ import Store from "./store.js";
 
   /* ── Map registry ───────────────────────────────────────────── */
   const MAPS = [
-    { id: 'mirage',  label: 'Mirage',  tag: 'Dust Belt',     img: 'map_pics/CS2-Mirage-Callout-Map.jpg',  viewHref: 'mirage.html',  active: true  },
-    { id: 'inferno', label: 'Inferno', tag: 'Mediterranean', img: 'map_pics/CS2-Inferno-Callout-Map.jpg', viewHref: 'inferno.html', active: true  },
-    { id: 'ancient', label: 'Ancient', tag: 'Jungle',        img: 'map_pics/CS2-Mirage-Callout-Map.jpg',  viewHref: 'ancient.html', active: false },
-    { id: 'nuke',    label: 'Nuke',    tag: 'Industrial',    img: 'map_pics/CS2-Mirage-Callout-Map.jpg',  viewHref: 'nuke.html',    active: false },
-    { id: 'dust2',   label: 'Dust 2',  tag: 'Dust Belt',     img: 'map_pics/CS2-Mirage-Callout-Map.jpg',  viewHref: 'dust2.html',   active: false },
-    { id: 'vertigo', label: 'Vertigo', tag: 'Urban',         img: 'map_pics/CS2-Mirage-Callout-Map.jpg',  viewHref: 'vertigo.html', active: false },
+    { id: 'ancient',    label: 'Ancient',  tag: 'Jungle',          img: 'map_pics/CS2-Ancient-Callout-Map.jpg',      viewHref: 'ancient.html',  active: true,  nuke: false },
+    { id: 'anubis',     label: 'Anubis',   tag: 'Desert',          img: 'map_pics/CS2-Anubis-Callout-Map.jpg',       viewHref: 'anubis.html',   active: true,  nuke: false },
+    { id: 'cache',      label: 'Cache',    tag: 'Industrial',      img: 'map_pics/CS2-Cache-Callout-Map.jpg',        viewHref: 'cache.html',    active: true,  nuke: false },
+    { id: 'dust2',      label: 'Dust 2',   tag: 'Dust Belt',       img: 'map_pics/CS2-Dust2-Callout-Map.jpg',        viewHref: 'dust2.html',    active: true,  nuke: false },
+    { id: 'inferno',    label: 'Inferno',  tag: 'Mediterranean',   img: 'map_pics/CS2-Inferno-Callout-Map.jpg',      viewHref: 'inferno.html',  active: true,  nuke: false },
+    { id: 'mirage',     label: 'Mirage',   tag: 'Dust Belt',       img: 'map_pics/CS2-Mirage-Callout-Map.jpg',       viewHref: 'mirage.html',   active: true,  nuke: false },
+    // Nuke is special — two layer IDs, one card
+    { id: 'nuke-upper', label: 'Nuke',     tag: 'Industrial · 2 Layers', img: 'map_pics/CS2-Nuke-Upper-Callout-Map.jpg', viewHref: 'nuke.html', active: true, nuke: true,
+      layers: [
+        { id: 'nuke-upper', label: 'Upper', img: 'map_pics/CS2-Nuke-Upper-Callout-Map.jpg' },
+        { id: 'nuke-lower', label: 'Lower', img: 'map_pics/CS2-Nuke-Lower-Callout-Map.jpg' },
+      ]
+    },
+    { id: 'overpass',   label: 'Overpass', tag: 'Urban',           img: 'map_pics/CS2-Overpass-Callout-Map.jpg',     viewHref: 'overpass.html', active: true,  nuke: false },
   ];
 
   /* ── DOM refs — lock ────────────────────────────────────────── */
@@ -109,6 +117,7 @@ import Store from "./store.js";
 
   /* ── Editor state ───────────────────────────────────────────── */
   let currentMap   = null;
+  let nukeLayer    = 'upper';   // only used when currentMap.nuke === true
   let placing      = false;
   let activeSpotId = null;
   let activeUtilId = null;
@@ -218,6 +227,7 @@ import Store from "./store.js";
   ══════════════════════════════════════════════════════════════ */
   async function openEditor(map) {
     currentMap   = map;
+    nukeLayer    = 'upper';
     activeSpotId = null;
     activeUtilId = null;
     placing      = false;
@@ -226,7 +236,42 @@ import Store from "./store.js";
 
     editorMapTitle.textContent = map.label;
     btnViewMap.href            = map.viewHref;
-    mapImg.src                 = map.img;
+
+    // Inject or remove Nuke layer toggle in sidebar
+    const existingToggle = document.getElementById('nuke-layer-toggle');
+    if (existingToggle) existingToggle.remove();
+
+    if (map.nuke) {
+      const toggleWrap = document.createElement('div');
+      toggleWrap.id = 'nuke-layer-toggle';
+      toggleWrap.className = 'sidebar-section';
+      toggleWrap.innerHTML = `
+        <div class="sidebar-label">Layer</div>
+        <div class="admin-layer-toggle">
+          <button class="admin-layer-btn active" data-nuke-layer="upper">&#8679; Upper</button>
+          <button class="admin-layer-btn" data-nuke-layer="lower">&#8681; Lower</button>
+        </div>`;
+      // Insert before spot-list section
+      const sidebar = document.querySelector('.sidebar');
+      sidebar.insertBefore(toggleWrap, sidebar.firstChild);
+
+      toggleWrap.querySelectorAll('.admin-layer-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          nukeLayer = btn.dataset.nukeLayer;
+          toggleWrap.querySelectorAll('.admin-layer-btn')
+            .forEach(b => b.classList.toggle('active', b === btn));
+          const layer = map.layers.find(l => l.id === 'nuke-' + nukeLayer);
+          mapImg.src = layer.img;
+          activeSpotId = null; activeUtilId = null;
+          if (mapImg.complete && mapImg.naturalWidth > 0) loadAndRender();
+          else mapImg.onload = loadAndRender;
+        });
+      });
+
+      mapImg.src = map.layers[0].img;
+    } else {
+      mapImg.src = map.img;
+    }
 
     lobbyShell.style.display  = 'none';
     editorShell.style.display = 'grid';
@@ -243,9 +288,14 @@ import Store from "./store.js";
   });
 
   /* ── Fetch Firestore → cache → render ───────────────────────── */
+  function activeMapId() {
+    if (currentMap.nuke) return 'nuke-' + nukeLayer;
+    return currentMap.id;
+  }
+
   async function loadAndRender() {
     setLoading(true);
-    cachedSpots = await Store.getHotspots(currentMap.id);
+    cachedSpots = await Store.getHotspots(activeMapId());
     setLoading(false);
     render();
   }
@@ -429,7 +479,7 @@ import Store from "./store.js";
   async function deleteSpot(id) {
     if (!confirm('Delete this hotspot and all its utilities?')) return;
     setLoading(true);
-    await Store.deleteHotspot(currentMap.id, id);
+    await Store.deleteHotspot(activeMapId(), id);
     cacheDeleteSpot(id);
     if (activeSpotId === id) { activeSpotId = null; activeUtilId = null; }
     setLoading(false);
@@ -439,7 +489,7 @@ import Store from "./store.js";
   async function deleteUtil(id) {
     if (!confirm('Delete this utility?')) return;
     setLoading(true);
-    await Store.deleteUtility(currentMap.id, activeSpotId, id);
+    await Store.deleteUtility(activeMapId(), activeSpotId, id);
     cacheDeleteUtil(activeSpotId, id);
     if (activeUtilId === id) activeUtilId = null;
     setLoading(false);
@@ -464,7 +514,7 @@ import Store from "./store.js";
     mapCol.classList.remove('placing');
     btnAddSpot.textContent = 'Add Hotspot';
     setLoading(true);
-    await Store.addHotspot(currentMap.id, spot);
+    await Store.addHotspot(activeMapId(), spot);
     cacheAddSpot(spot);
     setLoading(false);
     selectSpot(spot.id);
@@ -474,7 +524,7 @@ import Store from "./store.js";
   btnSaveSpot.addEventListener('click', async () => {
     const label = fSpotName.value.trim() || 'Hotspot';
     setLoading(true);
-    await Store.updateHotspot(currentMap.id, activeSpotId, { label });
+    await Store.updateHotspot(activeMapId(), activeSpotId, { label });
     cacheUpdateSpot(activeSpotId, { label });
     setLoading(false);
     render();
@@ -489,7 +539,7 @@ import Store from "./store.js";
       video: '', startPoint: '', aim: '', throwType: '', notes: ''
     };
     setLoading(true);
-    await Store.addUtility(currentMap.id, activeSpotId, util);
+    await Store.addUtility(activeMapId(), activeSpotId, util);
     cacheAddUtil(activeSpotId, util);
     setLoading(false);
     selectUtil(util.id);
@@ -506,7 +556,7 @@ import Store from "./store.js";
       notes: fUtilNotes.value.trim(),
     };
     setLoading(true);
-    await Store.updateUtility(currentMap.id, activeSpotId, activeUtilId, patch);
+    await Store.updateUtility(activeMapId(), activeSpotId, activeUtilId, patch);
     cacheUpdateUtil(activeSpotId, activeUtilId, patch);
     setLoading(false);
     render();
@@ -518,7 +568,7 @@ import Store from "./store.js";
   btnClearAll.addEventListener('click', async () => {
     if (!confirm(`Delete ALL hotspots and utilities for ${currentMap.label}?`)) return;
     setLoading(true);
-    await Store.clearMap(currentMap.id);
+    await Store.clearMap(activeMapId());
     cachedSpots  = [];
     activeSpotId = null;
     activeUtilId = null;
@@ -528,7 +578,7 @@ import Store from "./store.js";
 
   /* ── Export ─────────────────────────────────────────────────── */
   btnExport.addEventListener('click', async () => {
-    const json = await Store.exportJSON(currentMap.id);
+    const json = await Store.exportJSON(activeMapId());
     const blob = new Blob([json], { type: 'application/json' });
     const url  = URL.createObjectURL(blob);
     const a    = Object.assign(document.createElement('a'),
