@@ -30,11 +30,11 @@
 
   <div class="map-grid">
 
-    <!-- MIRAGE — active -->
-    <a href="mirage.html" class="map-card" id="card-mirage">
+    <!-- MIRAGE -->
+    <a href="mirage.html" class="map-card">
       <img class="map-thumb" src="map_pics/CS2-Mirage-Callout-Map.jpg" alt="Mirage" />
       <div class="map-card-overlay"></div>
-      <div class="map-count" id="mirage-count">— Utilities</div>
+      <div class="map-count" id="count-mirage">— Utilities</div>
       <div class="map-card-body">
         <div class="map-tag">Dust Belt</div>
         <div class="map-name">Mirage</div>
@@ -42,11 +42,11 @@
       </div>
     </a>
 
-    <!-- INFERNO — active -->
-    <a href="inferno.html" class="map-card" id="card-inferno">
+    <!-- INFERNO -->
+    <a href="inferno.html" class="map-card">
       <img class="map-thumb" src="map_pics/CS2-Inferno-Callout-Map.jpg" alt="Inferno" />
       <div class="map-card-overlay"></div>
-      <div class="map-count" id="inferno-count">— Utilities</div>
+      <div class="map-count" id="count-inferno">— Utilities</div>
       <div class="map-card-body">
         <div class="map-tag">Mediterranean</div>
         <div class="map-name">Inferno</div>
@@ -112,19 +112,16 @@
 
 </div>
 
-<script src="scripts/store.js"></script>
-<script>
-  (function () {
-    [
-      { id: 'mirage',  elId: 'mirage-count'  },
-      { id: 'inferno', elId: 'inferno-count' },
-    ].forEach(function(m) {
-      const spots = Store.getHotspots(m.id);
+<script type="module">
+  import Store from './scripts/store.js';
+  const MAPS = ['mirage', 'inferno'];
+  for (const id of MAPS) {
+    Store.getHotspots(id).then(spots => {
       const total = spots.reduce((n, s) => n + (s.utilities || []).length, 0);
-      const el = document.getElementById(m.elId);
+      const el = document.getElementById('count-' + id);
       if (el) el.textContent = total + (total === 1 ? ' Utility' : ' Utilities');
     });
-  })();
+  }
 </script>
 </body>
 </html>

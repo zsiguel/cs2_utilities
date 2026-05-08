@@ -1,122 +1,105 @@
 /* ============================================================
-   store.js — unified localStorage data layer
-   All pages import this to read/write hotspot + utility data.
+   store.js — Firestore data layer
+   Firestore structure:
+     maps/{mapId}/hotspots/{hotspotId}
+     maps/{mapId}/hotspots/{hotspotId}/utilities/{utilityId}
    ============================================================ */
 
-const STORE_KEY = 'cs2_utility_hub';
+import {
+  db, collection, doc,
+  getDocs, setDoc, deleteDoc
+} from "./firebase-config.js";
 
-const Store = (() => {
+const Store = {
 
-  /** Return the full data object (hotspots keyed by map id) */
-  function load() {
-    try {
-      return JSON.parse(localStorage.getItem(STORE_KEY)) || {};
-    } catch {
-      return {};
-    }
-  }
-
-  /** Persist the full data object */
-  function save(data) {
-    localStorage.setItem(STORE_KEY, JSON.stringify(data));
-  }
-
-  /** Get all hotspots for a given map (e.g. "mirage") */
-  function getHotspots(mapId) {
-    return load()[mapId] || [];
-  }
-
-  /** Overwrite all hotspots for a given map */
-  function setHotspots(mapId, hotspots) {
-    const data = load();
-    data[mapId] = hotspots;
-    save(data);
-  }
-
-  /** Add a new hotspot to a map */
-  function addHotspot(mapId, hotspot) {
-    const spots = getHotspots(mapId);
-    spots.push(hotspot);
-    setHotspots(mapId, spots);
-    return spots;
-  }
-
-  /** Update a hotspot by its id */
-  function updateHotspot(mapId, hotspotId, patch) {
-    const spots = getHotspots(mapId).map(s =>
-      s.id === hotspotId ? { ...s, ...patch } : s
-    );
-    setHotspots(mapId, spots);
-    return spots;
-  }
-
-  /** Delete a hotspot by its id */
-  function deleteHotspot(mapId, hotspotId) {
-    const spots = getHotspots(mapId).filter(s => s.id !== hotspotId);
-    setHotspots(mapId, spots);
-    return spots;
-  }
-
-  /** Add a utility to a specific hotspot */
-  function addUtility(mapId, hotspotId, utility) {
-    const spots = getHotspots(mapId);
-    const spot  = spots.find(s => s.id === hotspotId);
-    if (!spot) return spots;
-    if (!spot.utilities) spot.utilities = [];
-    spot.utilities.push(utility);
-    setHotspots(mapId, spots);
-    return spots;
-  }
-
-  /** Update a utility within a hotspot */
-  function updateUtility(mapId, hotspotId, utilityId, patch) {
-    const spots = getHotspots(mapId);
-    const spot  = spots.find(s => s.id === hotspotId);
-    if (!spot) return spots;
-    spot.utilities = (spot.utilities || []).map(u =>
-      u.id === utilityId ? { ...u, ...patch } : u
-    );
-    setHotspots(mapId, spots);
-    return spots;
-  }
-
-  /** Delete a utility from a hotspot */
-  function deleteUtility(mapId, hotspotId, utilityId) {
-    const spots = getHotspots(mapId);
-    const spot  = spots.find(s => s.id === hotspotId);
-    if (!spot) return spots;
-    spot.utilities = (spot.utilities || []).filter(u => u.id !== utilityId);
-    setHotspots(mapId, spots);
-    return spots;
-  }
-
-  /** Wipe all data for a map */
-  function clearMap(mapId) {
-    const data = load();
-    delete data[mapId];
-    save(data);
-  }
-
-  /** Export full data as JSON string */
-  function exportJSON() {
-    return JSON.stringify(load(), null, 2);
-  }
-
-  /** Import data from JSON string (merges) */
-  function importJSON(jsonStr) {
-    const incoming = JSON.parse(jsonStr);
-    const existing = load();
-    save({ ...existing, ...incoming });
-  }
-
-  /** Generate a simple unique id */
-  function uid() {
+  /* ── uid generator ─────────────────────────────────────────── */
+  uid() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-  }
+  },
 
-  return {
-    getHotspots, setHotspots, addHotspot, updateHotspot, deleteHotspot,
-    addUtility, updateUtility, deleteUtility,
-    clearMap, exportJSON, importJSON, uid
-  };
-})();
+  /* ── READ: all hotspots + utilities for a map ───────────────── */
+  async getHotspots(mapId) {
+    const spotsSnap = await getDocs(
+      collection(db, "maps", mapId, "hotspots")
+    );
+    const hotspots = [];
+    for (const spotDoc of spotsSnap.docs) {
+      const utilsSnap = await getDocs(
+        collection(db, "maps", mapId, "hotspots", spotDoc.id, "utilities")
+      );
+      hotspots.push({
+        id: spotDoc.id,
+        ...spotDoc.data(),
+        utilities: utilsSnap.docs.map(u => ({ id: u.id, ...u.data() }))
+      });
+    }
+    return hotspots;
+  },
+
+  /* ── CREATE hotspot ─────────────────────────────────────────── */
+  async addHotspot(mapId, hotspot) {
+    const { id, utilities, ...data } = hotspot;
+    await setDoc(doc(db, "maps", mapId, "hotspots", id), data);
+  },
+
+  /* ── UPDATE hotspot fields ──────────────────────────────────── */
+  async updateHotspot(mapId, hotspotId, patch) {
+    await setDoc(
+      doc(db, "maps", mapId, "hotspots", hotspotId),
+      patch,
+      { merge: true }
+    );
+  },
+
+  /* ── DELETE hotspot + all its utilities ─────────────────────── */
+  async deleteHotspot(mapId, hotspotId) {
+    const utilsSnap = await getDocs(
+      collection(db, "maps", mapId, "hotspots", hotspotId, "utilities")
+    );
+    for (const u of utilsSnap.docs) await deleteDoc(u.ref);
+    await deleteDoc(doc(db, "maps", mapId, "hotspots", hotspotId));
+  },
+
+  /* ── CREATE utility ─────────────────────────────────────────── */
+  async addUtility(mapId, hotspotId, utility) {
+    const { id, ...data } = utility;
+    await setDoc(
+      doc(db, "maps", mapId, "hotspots", hotspotId, "utilities", id),
+      data
+    );
+  },
+
+  /* ── UPDATE utility fields ──────────────────────────────────── */
+  async updateUtility(mapId, hotspotId, utilityId, patch) {
+    await setDoc(
+      doc(db, "maps", mapId, "hotspots", hotspotId, "utilities", utilityId),
+      patch,
+      { merge: true }
+    );
+  },
+
+  /* ── DELETE utility ─────────────────────────────────────────── */
+  async deleteUtility(mapId, hotspotId, utilityId) {
+    await deleteDoc(
+      doc(db, "maps", mapId, "hotspots", hotspotId, "utilities", utilityId)
+    );
+  },
+
+  /* ── DELETE all hotspots for a map ─────────────────────────── */
+  async clearMap(mapId) {
+    const spotsSnap = await getDocs(
+      collection(db, "maps", mapId, "hotspots")
+    );
+    for (const spotDoc of spotsSnap.docs) {
+      await this.deleteHotspot(mapId, spotDoc.id);
+    }
+  },
+
+  /* ── Export map data as JSON ────────────────────────────────── */
+  async exportJSON(mapId) {
+    const hotspots = await this.getHotspots(mapId);
+    return JSON.stringify({ [mapId]: hotspots }, null, 2);
+  }
+};
+
+export default Store;

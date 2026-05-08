@@ -12,7 +12,7 @@
 </head>
 <body>
 
-  <!-- ── Password lock screen ─────────────────────────────────── -->
+  <!-- ── Password lock ────────────────────────────────────────── -->
   <div class="lock-screen" id="lock-screen">
     <div class="lock-box">
       <div class="lock-title">Admin <span>Access</span></div>
@@ -26,9 +26,8 @@
     </div>
   </div>
 
-  <!-- ── Map lobby (shown after login, before map is chosen) ──── -->
+  <!-- ── Map lobby ────────────────────────────────────────────── -->
   <div class="lobby-shell" id="lobby-shell" style="display:none">
-
     <header class="lobby-header">
       <div class="logo-block">
         <div class="logo-eyebrow">CS2 Utility Hub</div>
@@ -38,29 +37,24 @@
       <div class="header-rule"></div>
       <div class="admin-badge" style="margin-bottom:.6rem">Admin Mode</div>
     </header>
-
     <div class="section-header">
       <span class="section-label">Maps</span>
       <div class="section-line"></div>
     </div>
-
-    <div class="map-grid" id="lobby-grid">
-      <!-- cards injected by admin.js -->
-    </div>
-
+    <div class="map-grid" id="lobby-grid"></div>
     <footer class="lobby-footer">
       <a href="index.html" class="footer-back">
-        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="10,3 5,8 10,13"/>
         </svg>
         Back to Site
       </a>
-      <span class="footer-note">Changes are saved automatically to your browser</span>
+      <span class="footer-note">All changes are saved to Firestore instantly</span>
     </footer>
-
   </div>
 
-  <!-- ── Editor shell (shown after map is chosen) ──────────────── -->
+  <!-- ── Editor ───────────────────────────────────────────────── -->
   <div class="shell" id="editor-shell" style="display:none">
 
     <div class="topbar">
@@ -79,7 +73,7 @@
       <div class="admin-badge">Admin Mode</div>
       <div class="topbar-divider"></div>
       <button class="topbar-btn primary" id="btn-add-spot">Add Hotspot</button>
-      <a class="topbar-btn" id="btn-view-map" href="mirage.html" target="_blank">View Live</a>
+      <a class="topbar-btn" id="btn-view-map" href="#" target="_blank">View Live</a>
       <button class="topbar-btn" id="btn-export">Export JSON</button>
       <button class="topbar-btn danger" id="btn-clear-all">Clear All</button>
     </div>
@@ -96,7 +90,7 @@
         <div class="sidebar-section">
           <div class="sidebar-label">Hotspots</div>
           <div id="spot-list">
-            <div class="empty-state">No hotspots yet.<br>Click "Add Hotspot" then click the map.</div>
+            <div class="empty-state">No hotspots yet.</div>
           </div>
         </div>
 
@@ -113,6 +107,7 @@
         </div>
 
         <div id="util-section" style="display:none">
+
           <div class="sidebar-section">
             <div class="sidebar-label">Utilities</div>
             <div id="util-list"></div>
@@ -123,6 +118,7 @@
 
           <div class="sidebar-section" id="util-form" style="display:none">
             <div class="sidebar-label">Edit Utility</div>
+
             <div class="field">
               <label>Name *</label>
               <input type="text" id="f-util-name" placeholder="e.g. Side Alley - Con" />
@@ -143,6 +139,8 @@
                 <option value="CT">CT — Counter-Terrorist</option>
               </select>
             </div>
+
+            <!-- Video source picker -->
             <div class="field">
               <label>Video Source</label>
               <select id="f-util-video-type">
@@ -151,7 +149,6 @@
                 <option value="youtube">YouTube embed URL</option>
               </select>
             </div>
-            <!-- local file input -->
             <div class="field" id="field-local" style="display:none">
               <label>Filename <span style="color:var(--text-dim)">(.mp4)</span></label>
               <input type="text" id="f-util-video-local" placeholder="Side Alley - Con (Jump + L).mp4" />
@@ -159,11 +156,11 @@
                 Path: videos/<span id="local-path-preview" style="color:var(--gold-dim)">mapname/filename.mp4</span>
               </div>
             </div>
-            <!-- youtube input -->
             <div class="field" id="field-youtube" style="display:none">
               <label>YouTube Embed URL</label>
               <input type="text" id="f-util-video-yt" placeholder="https://www.youtube.com/embed/VIDEO_ID" />
             </div>
+
             <div class="field">
               <label>Start Position <span style="color:var(--text-dim)">(optional)</span></label>
               <textarea id="f-util-start" placeholder="Where to stand…"></textarea>
@@ -180,19 +177,20 @@
               <label>Notes <span style="color:var(--text-dim)">(optional)</span></label>
               <textarea id="f-util-notes" placeholder="Extra tips, tick-rate info…"></textarea>
             </div>
+
             <div class="btn-row">
               <button class="btn btn-gold" id="btn-save-util">Save</button>
               <button class="btn btn-danger" id="btn-delete-util" style="display:none">Delete</button>
-              <button class="btn" id="btn-cancel-util" style="color:var(--text-mid);border-color:var(--border)">Cancel</button>
+              <button class="btn" id="btn-cancel-util"
+                style="color:var(--text-mid);border-color:var(--border)">Cancel</button>
             </div>
           </div>
-        </div>
 
+        </div>
       </div>
     </div>
   </div>
 
-<script src="scripts/store.js"></script>
-<script src="scripts/admin.js"></script>
+<script type="module" src="scripts/admin.js"></script>
 </body>
 </html>

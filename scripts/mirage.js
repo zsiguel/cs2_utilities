@@ -1,38 +1,30 @@
 /* ============================================================
-   mirage.js — renders hotspots + submenus from localStorage
+   mirage.js — renders hotspots + submenus from Firestore
+   Shared by ALL map pages via data-map-id on the <img> tag.
    ============================================================ */
 
-(function () {
+import Store from "./store.js";
+
+(async function () {
   const mapImg     = document.getElementById('map-img');
-  const MAP_ID     = mapImg.dataset.mapId || 'mirage';
   const mapWrapper = document.getElementById('map-wrapper');
   const countPill  = document.getElementById('util-count-pill');
+  const MAP_ID     = mapImg.dataset.mapId || 'mirage';
 
-  const TYPE_COLOR = {
-    smoke:   'var(--smoke-clr)',
-    flash:   'var(--flash-clr)',
-    molotov: 'var(--molly-clr)',
-    nade:    'var(--nade-clr)',
-  };
+  let openSubmenu  = null;
+  let cachedSpots  = [];
 
-  let openSubmenu = null;
-
-  /* ── Position helper — maps stored % coords onto the image ──── */
+  /* ── Position helper: % → px relative to image inside wrapper ─ */
   function applyPosition(el, top, left) {
     const imgRect = mapImg.getBoundingClientRect();
     const wRect   = mapWrapper.getBoundingClientRect();
-    const offsetX = imgRect.left - wRect.left;
-    const offsetY = imgRect.top  - wRect.top;
-    el.style.left = (parseFloat(left) / 100 * imgRect.width  + offsetX) + 'px';
-    el.style.top  = (parseFloat(top)  / 100 * imgRect.height + offsetY) + 'px';
+    el.style.left = (parseFloat(left) / 100 * imgRect.width  + (imgRect.left - wRect.left)) + 'px';
+    el.style.top  = (parseFloat(top)  / 100 * imgRect.height + (imgRect.top  - wRect.top))  + 'px';
   }
 
-  /* ── Build DOM from stored hotspots ────────────────────────── */
-  function buildHotspots() {
-    // Remove existing pins
+  /* ── Build hotspot DOM ──────────────────────────────────────── */
+  function buildHotspots(hotspots) {
     document.querySelectorAll('.hotspot').forEach(el => el.remove());
-
-    const hotspots = Store.getHotspots(MAP_ID);
     let totalUtils = 0;
 
     hotspots.forEach(spot => {
@@ -42,17 +34,14 @@
       anchor.className = 'hotspot';
       applyPosition(anchor, spot.top, spot.left);
 
-      /* trigger dot */
       const btn = document.createElement('button');
       btn.className = 'hotspot-btn';
       btn.setAttribute('aria-label', spot.label);
 
-      /* label */
       const lbl = document.createElement('span');
       lbl.className = 'hotspot-label';
       lbl.textContent = spot.label;
 
-      /* submenu */
       const sub = document.createElement('div');
       sub.className = 'submenu';
 
@@ -64,7 +53,7 @@
       (spot.utilities || []).forEach(util => {
         const item = document.createElement('a');
         item.className = 'submenu-item';
-        item.href = `utility.html?map=${MAP_ID}&id=${util.id}`;
+        item.href = `utility.html?map=${MAP_ID}&spot=${spot.id}&id=${util.id}`;
 
         const dot = document.createElement('span');
         dot.className = `type-dot ${util.type}`;
@@ -84,7 +73,8 @@
 
       if ((spot.utilities || []).length === 0) {
         const empty = document.createElement('div');
-        empty.style.cssText = 'padding:.5rem .6rem;font-size:.72rem;color:var(--text-dim);font-family:"Barlow Condensed",sans-serif;letter-spacing:.1em;text-transform:uppercase;';
+        empty.style.cssText = 'padding:.5rem .6rem;font-size:.72rem;color:var(--text-dim);' +
+          'font-family:"Barlow Condensed",sans-serif;letter-spacing:.1em;text-transform:uppercase;';
         empty.textContent = 'No utilities yet';
         sub.appendChild(empty);
       }
@@ -94,7 +84,7 @@
       anchor.appendChild(sub);
       mapWrapper.appendChild(anchor);
 
-      /* hover logic */
+      /* ── Hover logic ─────────────────────────────────────────── */
       let hideTimer = null;
 
       function showMenu() {
@@ -105,13 +95,12 @@
         }
         const aRect = anchor.getBoundingClientRect();
         const wRect = mapWrapper.getBoundingClientRect();
-        const spaceRight = wRect.right - aRect.right;
-        sub.style.left  = spaceRight < 230 ? 'auto' : '32px';
-        sub.style.right = spaceRight < 230 ? '32px' : 'auto';
+        sub.style.left  = (wRect.right - aRect.right) < 230 ? 'auto' : '32px';
+        sub.style.right = (wRect.right - aRect.right) < 230 ? '32px' : 'auto';
         sub.style.top   = '0';
         sub.classList.add('visible');
         btn.classList.add('open');
-        sub.__btn = btn;
+        sub.__btn   = btn;
         openSubmenu = sub;
       }
 
@@ -129,13 +118,13 @@
       sub.addEventListener('mouseleave', scheduleHide);
     });
 
-    /* update pill */
     if (countPill) {
-      countPill.textContent = totalUtils + ' utilit' + (totalUtils === 1 ? 'y' : 'ies') + ' loaded';
+      countPill.textContent =
+        totalUtils + ' utilit' + (totalUtils === 1 ? 'y' : 'ies') + ' loaded';
     }
   }
 
-  /* ── Click outside closes submenu ──────────────────────────── */
+  /* Close submenu on outside click */
   document.addEventListener('click', e => {
     if (!e.target.closest('.hotspot') && openSubmenu) {
       openSubmenu.classList.remove('visible');
@@ -144,11 +133,17 @@
     }
   });
 
-  /* ── Init ───────────────────────────────────────────────────── */
-  if (mapImg.complete) buildHotspots();
-  else mapImg.addEventListener('load', buildHotspots);
+  /* Reposition pins on resize without re-fetching Firestore */
+  window.addEventListener('resize', () => buildHotspots(cachedSpots));
 
-  // Reposition pins when window is resized
-  window.addEventListener('resize', buildHotspots);
+  /* ── Init ───────────────────────────────────────────────────── */
+  async function init() {
+    if (countPill) countPill.textContent = 'Loading…';
+    cachedSpots = await Store.getHotspots(MAP_ID);
+    buildHotspots(cachedSpots);
+  }
+
+  if (mapImg.complete && mapImg.naturalWidth > 0) await init();
+  else mapImg.addEventListener('load', init);
 
 })();
