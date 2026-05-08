@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CS2 Utility Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles/base.css" />
+  <link rel="stylesheet" href="styles/index.css" />
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="logo-block">
+      <div class="logo-eyebrow">Counter-Strike 2</div>
+      <div class="logo-title">Utility <span>Hub</span></div>
+      <div class="logo-sub">Smokes · Flashes · Molotovs · Nades</div>
+    </div>
+    <div class="header-rule"></div>
+    <div class="header-tag">Select a map to begin</div>
+  </header>
+
+  <div class="section-header">
+    <span class="section-label">Active Duty Maps</span>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="map-grid">
+
+    <!-- MIRAGE — active -->
+    <a href="mirage.html" class="map-card" id="card-mirage">
+      <img class="map-thumb" src="map_pics/CS2-Mirage-Callout-Map.jpg" alt="Mirage" />
+      <div class="map-card-overlay"></div>
+      <div class="map-count" id="mirage-count">— Utilities</div>
+      <div class="map-card-body">
+        <div class="map-tag">Dust Belt</div>
+        <div class="map-name">Mirage</div>
+        <div class="map-status available">● Available</div>
+      </div>
+    </a>
+
+    <!-- INFERNO -->
+    <div class="map-card disabled">
+      <div class="wip-band">Soon</div>
+      <img class="map-thumb" src="map_pics/CS2-Mirage-Callout-Map.jpg" alt="Inferno" />
+      <div class="map-card-overlay"></div>
+      <div class="map-card-body">
+        <div class="map-tag">Mediterranean</div>
+        <div class="map-name">Inferno</div>
+        <div class="map-status soon">○ Coming Soon</div>
+      </div>
+    </div>
+
+    <!-- ANCIENT -->
+    <div class="map-card disabled">
+      <div class="wip-band">Soon</div>
+      <img class="map-thumb" src="map_pics/CS2-Mirage-Callout-Map.jpg" alt="Ancient" />
+      <div class="map-card-overlay"></div>
+      <div class="map-card-body">
+        <div class="map-tag">Jungle</div>
+        <div class="map-name">Ancient</div>
+        <div class="map-status soon">○ Coming Soon</div>
+      </div>
+    </div>
+
+    <!-- NUKE -->
+    <div class="map-card disabled">
+      <div class="wip-band">Soon</div>
+      <img class="map-thumb" src="map_pics/CS2-Mirage-Callout-Map.jpg" alt="Nuke" />
+      <div class="map-card-overlay"></div>
+      <div class="map-card-body">
+        <div class="map-tag">Industrial</div>
+        <div class="map-name">Nuke</div>
+        <div class="map-status soon">○ Coming Soon</div>
+      </div>
+    </div>
+
+    <!-- DUST 2 -->
+    <div class="map-card disabled">
+      <div class="wip-band">Soon</div>
+      <img class="map-thumb" src="map_pics/CS2-Mirage-Callout-Map.jpg" alt="Dust2" />
+      <div class="map-card-overlay"></div>
+      <div class="map-card-body">
+        <div class="map-tag">Dust Belt</div>
+        <div class="map-name">Dust 2</div>
+        <div class="map-status soon">○ Coming Soon</div>
+      </div>
+    </div>
+
+    <!-- VERTIGO -->
+    <div class="map-card disabled">
+      <div class="wip-band">Soon</div>
+      <img class="map-thumb" src="map_pics/CS2-Mirage-Callout-Map.jpg" alt="Vertigo" />
+      <div class="map-card-overlay"></div>
+      <div class="map-card-body">
+        <div class="map-tag">Urban</div>
+        <div class="map-name">Vertigo</div>
+        <div class="map-status soon">○ Coming Soon</div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <span class="footer-note">CS2 Utility Hub — Community Resource</span>
+    <div class="footer-dot"></div>
+    <span class="footer-note">Not affiliated with Valve Corporation</span>
+  </footer>
+
+</div>
+
+<script src="scripts/store.js"></script>
+<script>
+  // Update Mirage utility count badge from localStorage
+  (function () {
+    const spots = Store.getHotspots('mirage');
+    const total = spots.reduce((n, s) => n + (s.utilities || []).length, 0);
+    const el = document.getElementById('mirage-count');
+    if (el) el.textContent = total + (total === 1 ? ' Utility' : ' Utilities');
+  })();
+</script>
+</body>
+</html>

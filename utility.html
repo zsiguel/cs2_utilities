@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Utility — CS2 Utility Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles/base.css" />
+  <link rel="stylesheet" href="styles/utility.css" />
+</head>
+<body>
+<div class="shell">
+
+  <div class="topbar">
+    <a id="map-back-link" href="mirage.html" class="back-btn">
+      <svg class="back-arrow" viewBox="0 0 16 16">
+        <polyline points="10,3 5,8 10,13"/>
+      </svg>
+      Back to Map
+    </a>
+
+    <div class="breadcrumb">
+      <a href="index.html">Hub</a>
+      <span class="breadcrumb-sep">/</span>
+      <a id="bc-map" href="mirage.html">Mirage</a>
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current" id="bc-name">Loading…</span>
+    </div>
+
+    <div class="topbar-spacer"></div>
+
+    <div class="util-type-badge" id="type-badge"></div>
+  </div>
+
+  <div class="content" id="content">
+    <!-- populated by utility.js -->
+  </div>
+
+</div>
+
+<script src="scripts/store.js"></script>
+<script src="scripts/utility.js"></script>
+</body>
+</html>

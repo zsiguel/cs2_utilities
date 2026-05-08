@@ -1,0 +1,427 @@
+/* ============================================================
+   ADMIN — hotspot editor GUI styles
+   ============================================================ */
+
+html, body { height: 100%; overflow: hidden; }
+
+.shell {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+/* ── Admin topbar extras ────────────────────────────────────── */
+.admin-badge {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .62rem; font-weight: 700;
+  letter-spacing: .2em; text-transform: uppercase;
+  color: var(--molly-clr); border: 1px solid var(--molly-clr);
+  padding: .2rem .6rem;
+}
+
+.topbar-btn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .68rem; font-weight: 600;
+  letter-spacing: .15em; text-transform: uppercase;
+  border: 1px solid var(--border);
+  padding: .35rem .9rem; cursor: pointer;
+  background: transparent; color: var(--text-mid);
+  transition: color .15s, border-color .15s, background .15s;
+}
+.topbar-btn:hover         { color: var(--gold); border-color: var(--gold-dim); }
+.topbar-btn.danger:hover  { color: var(--red);  border-color: var(--red); }
+.topbar-btn.primary       { color: var(--teal); border-color: var(--teal); }
+.topbar-btn.primary:hover { background: rgba(40,160,152,.12); }
+
+/* ── Workspace ──────────────────────────────────────────────── */
+.workspace {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── Map column ─────────────────────────────────────────────── */
+.map-col {
+  position: relative; overflow: hidden;
+  background: #05070a;
+  display: flex; align-items: center; justify-content: center;
+}
+
+#map-img {
+  max-height: 100%; max-width: 100%;
+  object-fit: contain; display: block;
+  filter: saturate(.7) brightness(.8);
+  user-select: none; -webkit-user-drag: none;
+}
+
+/* placement cursor */
+.map-col.placing { cursor: crosshair; }
+.map-col.placing #map-img { filter: saturate(.9) brightness(.95); }
+
+/* placement hint overlay */
+.place-hint {
+  position: absolute; top: .8rem; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(200,168,75,.15);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .65rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase;
+  padding: .4rem 1rem;
+  pointer-events: none; opacity: 0;
+  transition: opacity .2s;
+}
+.map-col.placing .place-hint { opacity: 1; }
+
+/* ── Hotspot pins on admin map ──────────────────────────────── */
+.admin-pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 10; cursor: pointer;
+}
+
+.pin-dot {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid var(--gold);
+  background: rgba(200,168,75,.2);
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s, transform .15s;
+}
+.pin-dot::after {
+  content: ''; width: 7px; height: 7px;
+  border-radius: 50%; background: var(--gold);
+}
+.admin-pin:hover  .pin-dot,
+.admin-pin.active .pin-dot {
+  background: rgba(200,168,75,.45);
+  transform: scale(1.15);
+}
+.admin-pin.active .pin-dot { border-color: #fff; }
+
+.pin-label {
+  position: absolute; top: calc(100% + 4px); left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .55rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--gold); white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0,0,0,.9);
+  pointer-events: none;
+}
+
+.pin-count {
+  position: absolute; top: -6px; right: -6px;
+  width: 15px; height: 15px; border-radius: 50%;
+  background: var(--gold); color: #000;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .55rem; font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── Sidebar panel ──────────────────────────────────────────── */
+.sidebar {
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  background: var(--panel); overflow-y: auto;
+}
+
+.sidebar-section {
+  padding: 1.1rem 1.2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .58rem; font-weight: 700;
+  letter-spacing: .25em; text-transform: uppercase;
+  color: var(--gold-dim); margin-bottom: .8rem;
+  display: flex; align-items: center; gap: .5rem;
+}
+.sidebar-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* empty state */
+.empty-state {
+  color: var(--text-dim);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .7rem; letter-spacing: .15em; text-transform: uppercase;
+  text-align: center; padding: 1.5rem 0;
+}
+
+/* ── Form fields ────────────────────────────────────────────── */
+.field { margin-bottom: .8rem; }
+.field label {
+  display: block;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .58rem; font-weight: 600;
+  letter-spacing: .2em; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: .3rem;
+}
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  background: var(--surface); color: var(--text-bright);
+  border: 1px solid var(--border);
+  padding: .45rem .6rem;
+  font-family: 'Barlow', sans-serif; font-size: .82rem;
+  outline: none; resize: vertical;
+  transition: border-color .15s;
+}
+.field input:focus,
+.field textarea:focus,
+.field select:focus { border-color: var(--gold-dim); }
+.field select option { background: var(--surface); }
+.field textarea { min-height: 60px; }
+
+/* ── Utility list in sidebar ────────────────────────────────── */
+.util-list { display: flex; flex-direction: column; gap: .4rem; }
+
+.util-row {
+  display: flex; align-items: center; gap: .6rem;
+  padding: .5rem .6rem;
+  background: var(--surface); border: 1px solid var(--border);
+  cursor: pointer; transition: border-color .12s;
+}
+.util-row:hover { border-color: var(--gold-dim); }
+.util-row.selected { border-color: var(--gold); background: var(--gold-glow); }
+
+.util-row-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+}
+.util-row-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .8rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+  flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.util-row-del {
+  background: none; border: none; cursor: pointer;
+  color: var(--text-dim); font-size: .9rem; line-height: 1;
+  padding: .1rem .2rem;
+  transition: color .12s;
+}
+.util-row-del:hover { color: var(--red); }
+
+/* ── Action buttons ─────────────────────────────────────────── */
+.btn-row { display: flex; gap: .5rem; margin-top: .6rem; flex-wrap: wrap; }
+
+.btn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .65rem; font-weight: 700;
+  letter-spacing: .18em; text-transform: uppercase;
+  padding: .4rem .9rem; border: 1px solid; cursor: pointer;
+  background: transparent; transition: background .15s, color .15s;
+}
+.btn-gold    { color: var(--gold);   border-color: var(--gold-dim); }
+.btn-gold:hover  { background: var(--gold-glow); }
+.btn-danger  { color: var(--red);    border-color: var(--red); }
+.btn-danger:hover { background: rgba(192,56,40,.1); }
+.btn-teal    { color: var(--teal);   border-color: var(--teal); }
+.btn-teal:hover  { background: rgba(40,160,152,.1); }
+.btn-full { width: 100%; justify-content: center; text-align: center; }
+
+/* ── Hotspot list (left panel overview) ─────────────────────── */
+.spot-list { display: flex; flex-direction: column; gap: .4rem; }
+
+.spot-row {
+  display: flex; align-items: center; gap: .6rem;
+  padding: .45rem .6rem;
+  background: var(--surface); border: 1px solid var(--border);
+  cursor: pointer; transition: border-color .12s;
+}
+.spot-row:hover        { border-color: var(--gold-dim); }
+.spot-row.active       { border-color: var(--gold); background: var(--gold-glow); }
+
+.spot-row-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  flex: 1;
+}
+.spot-row-badge {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .55rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--text-dim); border: 1px solid var(--border); padding: .1rem .3rem;
+}
+.spot-row-del {
+  background: none; border: none; cursor: pointer;
+  color: var(--text-dim); font-size: .9rem; line-height: 1;
+  padding: .1rem .2rem; transition: color .12s;
+}
+.spot-row-del:hover { color: var(--red); }
+
+/* ── Lock screen ────────────────────────────────────────────── */
+.lock-screen {
+  position: fixed; inset: 0; z-index: 1000;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+}
+.lock-box {
+  background: var(--panel); border: 1px solid var(--border);
+  padding: 2.5rem 3rem; width: 320px;
+  display: flex; flex-direction: column; gap: 1.2rem;
+  position: relative;
+}
+.lock-box::before, .lock-box::after {
+  content: ''; position: absolute; width: 10px; height: 10px;
+}
+.lock-box::before { top:0; left:0;
+  border-top: 2px solid var(--gold-dim); border-left: 2px solid var(--gold-dim); }
+.lock-box::after  { bottom:0; right:0;
+  border-bottom: 2px solid var(--gold-dim); border-right: 2px solid var(--gold-dim); }
+
+.lock-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.4rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase;
+}
+.lock-title span { color: var(--gold); }
+.lock-sub { font-size: .72rem; color: var(--text-dim); letter-spacing: .1em; text-transform: uppercase; }
+.lock-error {
+  font-size: .7rem; color: var(--red); letter-spacing: .1em; text-transform: uppercase;
+  display: none;
+}
+.lock-error.visible { display: block; }
+
+/* ── Lobby shell ────────────────────────────────────────────── */
+.lobby-shell {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* override the html/body height lock for lobby view */
+body.lobby-active { overflow-y: auto; }
+
+/* ── Lobby header ───────────────────────────────────────────── */
+.lobby-header {
+  padding: 2.5rem 4rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-end; gap: 2rem;
+}
+
+.logo-eyebrow {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .7rem; font-weight: 600;
+  letter-spacing: .25em; color: var(--molly-clr);
+  text-transform: uppercase; margin-bottom: .3rem;
+}
+.logo-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 3.2rem; font-weight: 900;
+  line-height: 1; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--text-bright);
+}
+.logo-title span { color: var(--gold); }
+.logo-sub {
+  font-size: .8rem; font-weight: 300;
+  color: var(--text-mid); letter-spacing: .12em;
+  text-transform: uppercase; margin-top: .5rem;
+}
+
+.header-rule {
+  flex: 1; height: 1px;
+  background: linear-gradient(90deg, var(--molly-clr) 0%, transparent 100%);
+  margin-bottom: .6rem;
+}
+
+/* ── Map grid (reused from index) ───────────────────────────── */
+.map-grid {
+  padding: 0 4rem 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.2rem;
+}
+
+.map-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  cursor: pointer; overflow: hidden;
+  transition: border-color .2s, transform .2s;
+  display: block;
+}
+.map-card:not(.disabled):hover {
+  border-color: var(--gold);
+  transform: translateY(-3px);
+  box-shadow: 0 0 18px 2px rgba(200,168,75,.15);
+}
+.map-card.disabled { cursor: not-allowed; opacity: .35; }
+
+.map-card::before, .map-card::after {
+  content: ''; position: absolute; width: 10px; height: 10px; z-index: 2;
+}
+.map-card::before { top:0; left:0;
+  border-top: 2px solid var(--gold-dim); border-left: 2px solid var(--gold-dim); }
+.map-card::after  { bottom:0; right:0;
+  border-bottom: 2px solid var(--gold-dim); border-right: 2px solid var(--gold-dim); }
+.map-card:not(.disabled):hover::before,
+.map-card:not(.disabled):hover::after { border-color: var(--gold); }
+
+.map-thumb {
+  width: 100%; aspect-ratio: 1; object-fit: cover; display: block;
+  filter: saturate(.35) brightness(.45);
+  transition: filter .3s;
+}
+.map-card:not(.disabled):hover .map-thumb { filter: saturate(.65) brightness(.65); }
+
+.map-card-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.92) 0%, rgba(0,0,0,.3) 50%, transparent 100%);
+}
+
+.map-card-body {
+  position: absolute; bottom:0; left:0; right:0;
+  padding: 1.2rem 1rem 1rem;
+}
+.map-card-tag {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .6rem; font-weight: 600;
+  letter-spacing: .2em; color: var(--gold);
+  text-transform: uppercase; margin-bottom: .3rem;
+}
+.map-card-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.8rem; font-weight: 900;
+  letter-spacing: .06em; text-transform: uppercase; line-height: 1;
+}
+.map-card-count {
+  font-size: .7rem; font-weight: 300;
+  letter-spacing: .1em; text-transform: uppercase;
+  margin-top: .4rem; color: var(--teal);
+}
+.map-card-count.zero { color: var(--text-dim); }
+
+.map-edit-badge {
+  position: absolute; top: .8rem; right: .8rem;
+  background: rgba(200,168,75,.1);
+  border: 1px solid var(--gold-dim);
+  padding: .2rem .5rem;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .6rem; font-weight: 700;
+  letter-spacing: .15em; color: var(--gold); text-transform: uppercase;
+}
+
+.wip-band {
+  position: absolute; top: 18px; right: -28px;
+  background: var(--border);
+  color: var(--text-dim);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .6rem; font-weight: 700;
+  letter-spacing: .15em; text-transform: uppercase;
+  padding: .2rem 2.4rem; transform: rotate(45deg); z-index: 3;
+}
+
+/* ── Lobby footer ───────────────────────────────────────────── */
+.lobby-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  padding: 1rem 4rem;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer-back {
+  display: flex; align-items: center; gap: .5rem;
+  text-decoration: none; color: var(--text-dim);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .65rem; letter-spacing: .15em; text-transform: uppercase;
+  transition: color .15s;
+}
+.footer-back:hover { color: var(--gold); }
+.footer-note { font-size: .65rem; letter-spacing: .1em; color: var(--text-dim); text-transform: uppercase; }

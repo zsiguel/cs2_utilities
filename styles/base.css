@@ -1,0 +1,158 @@
+/* ============================================================
+   BASE — shared variables, reset, and common elements
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:          #0a0c0f;
+  --surface:     #111418;
+  --panel:       #0d1014;
+  --border:      #1e2530;
+  --border-hot:  #c8a84b;
+  --gold:        #c8a84b;
+  --gold-dim:    #6a5820;
+  --gold-glow:   rgba(200,168,75,.1);
+  --text-bright: #e8e4d8;
+  --text-mid:    #8a8880;
+  --text-dim:    #454340;
+  --smoke-clr:   #7aade8;
+  --flash-clr:   #e8d870;
+  --molly-clr:   #e07830;
+  --nade-clr:    #60c870;
+  --teal:        #28a098;
+  --red:         #c03828;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text-bright);
+  font-family: 'Barlow', sans-serif;
+}
+
+/* Scanline overlay */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 2px,
+    rgba(0,0,0,.07) 2px, rgba(0,0,0,.07) 4px
+  );
+  pointer-events: none; z-index: 9999;
+}
+
+/* ── Shared topbar ─────────────────────────────────────────── */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: .8rem 1.6rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+  flex-wrap: wrap;
+}
+
+.back-btn {
+  display: flex; align-items: center; gap: .5rem;
+  text-decoration: none;
+  color: var(--text-mid);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  border: 1px solid var(--border);
+  padding: .35rem .8rem;
+  transition: color .15s, border-color .15s;
+  cursor: pointer;
+  background: transparent;
+}
+.back-btn:hover { color: var(--gold); border-color: var(--gold-dim); }
+
+.back-arrow {
+  width: 14px; height: 14px;
+  stroke: currentColor; fill: none;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+
+.topbar-divider { width: 1px; height: 20px; background: var(--border); }
+.topbar-spacer  { flex: 1; }
+
+.topbar-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.topbar-title span { color: var(--gold); }
+
+.topbar-sub {
+  font-size: .65rem;
+  color: var(--text-dim);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+/* ── Breadcrumb ────────────────────────────────────────────── */
+.breadcrumb {
+  display: flex; align-items: center; gap: .6rem;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .7rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+.breadcrumb-sep     { color: var(--text-dim); }
+.breadcrumb a       { color: var(--text-mid); text-decoration: none; }
+.breadcrumb a:hover { color: var(--gold); }
+.breadcrumb-current { color: var(--gold); }
+
+/* ── Status bar ────────────────────────────────────────────── */
+.statusbar {
+  border-top: 1px solid var(--border);
+  background: var(--panel);
+  padding: .5rem 1.6rem;
+  display: flex; align-items: center; gap: 1.5rem;
+}
+
+.status-pill {
+  display: flex; align-items: center; gap: .4rem;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .62rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--text-dim);
+}
+.status-live-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--teal);
+  animation: blink 1.4s ease-in-out infinite;
+}
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .2; } }
+
+.status-divider { width: 1px; height: 14px; background: var(--border); }
+.status-hint { font-size: .6rem; color: var(--text-dim); letter-spacing: .08em; }
+
+/* ── Type badge ────────────────────────────────────────────── */
+.util-type-badge {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .65rem; font-weight: 700;
+  letter-spacing: .2em; text-transform: uppercase;
+  padding: .25rem .7rem; border: 1px solid;
+}
+
+/* ── Section header ────────────────────────────────────────── */
+.section-header {
+  padding: 2.5rem 4rem 1rem;
+  display: flex; align-items: center; gap: 1.2rem;
+}
+.section-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .65rem; font-weight: 600;
+  letter-spacing: .25em; color: var(--gold-dim);
+  text-transform: uppercase; white-space: nowrap;
+}
+.section-line { flex: 1; height: 1px; background: var(--border); }
