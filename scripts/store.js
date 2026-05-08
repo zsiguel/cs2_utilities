@@ -22,17 +22,22 @@ const Store = {
     const spotsSnap = await getDocs(
       collection(db, "maps", mapId, "hotspots")
     );
-    const hotspots = [];
-    for (const spotDoc of spotsSnap.docs) {
-      const utilsSnap = await getDocs(
-        collection(db, "maps", mapId, "hotspots", spotDoc.id, "utilities")
-      );
-      hotspots.push({
-        id: spotDoc.id,
-        ...spotDoc.data(),
-        utilities: utilsSnap.docs.map(u => ({ id: u.id, ...u.data() }))
-      });
-    }
+
+    // Fetch all utility subcollections in parallel — one round trip per hotspot
+    // instead of sequential awaits
+    const hotspots = await Promise.all(
+      spotsSnap.docs.map(async spotDoc => {
+        const utilsSnap = await getDocs(
+          collection(db, "maps", mapId, "hotspots", spotDoc.id, "utilities")
+        );
+        return {
+          id: spotDoc.id,
+          ...spotDoc.data(),
+          utilities: utilsSnap.docs.map(u => ({ id: u.id, ...u.data() }))
+        };
+      })
+    );
+
     return hotspots;
   },
 
@@ -56,7 +61,8 @@ const Store = {
     const utilsSnap = await getDocs(
       collection(db, "maps", mapId, "hotspots", hotspotId, "utilities")
     );
-    for (const u of utilsSnap.docs) await deleteDoc(u.ref);
+    // Delete all utilities in parallel, then delete the hotspot
+    await Promise.all(utilsSnap.docs.map(u => deleteDoc(u.ref)));
     await deleteDoc(doc(db, "maps", mapId, "hotspots", hotspotId));
   },
 
@@ -90,9 +96,9 @@ const Store = {
     const spotsSnap = await getDocs(
       collection(db, "maps", mapId, "hotspots")
     );
-    for (const spotDoc of spotsSnap.docs) {
-      await this.deleteHotspot(mapId, spotDoc.id);
-    }
+    await Promise.all(
+      spotsSnap.docs.map(spotDoc => this.deleteHotspot(mapId, spotDoc.id))
+    );
   },
 
   /* ── Export map data as JSON ────────────────────────────────── */

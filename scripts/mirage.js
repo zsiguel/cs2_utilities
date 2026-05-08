@@ -22,9 +22,16 @@ import Store from "./store.js";
     el.style.top  = (parseFloat(top)  / 100 * imgRect.height + (imgRect.top  - wRect.top))  + 'px';
   }
 
-  /* ── Build hotspot DOM ──────────────────────────────────────── */
+  /* ── Reposition existing pins without rebuilding DOM ────────── */
+  function repositionHotspots() {
+    mapWrapper.querySelectorAll('.hotspot[data-spot-top]').forEach(el => {
+      applyPosition(el, el.dataset.spotTop, el.dataset.spotLeft);
+    });
+  }
+
+  /* ── Build hotspot DOM (called once on load) ────────────────── */
   function buildHotspots(hotspots) {
-    document.querySelectorAll('.hotspot').forEach(el => el.remove());
+    mapWrapper.querySelectorAll('.hotspot').forEach(el => el.remove());
     let totalUtils = 0;
 
     hotspots.forEach(spot => {
@@ -32,6 +39,9 @@ import Store from "./store.js";
 
       const anchor = document.createElement('div');
       anchor.className = 'hotspot';
+      // Store coords as data attrs so repositionHotspots() can reuse them
+      anchor.dataset.spotTop  = spot.top;
+      anchor.dataset.spotLeft = spot.left;
       applyPosition(anchor, spot.top, spot.left);
 
       const btn = document.createElement('button');
@@ -133,8 +143,8 @@ import Store from "./store.js";
     }
   });
 
-  /* Reposition pins on resize without re-fetching Firestore */
-  window.addEventListener('resize', () => buildHotspots(cachedSpots));
+  /* Reposition only on resize — no Firestore re-fetch, no DOM rebuild */
+  window.addEventListener('resize', repositionHotspots);
 
   /* ── Init ───────────────────────────────────────────────────── */
   async function init() {

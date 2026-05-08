@@ -41,7 +41,9 @@ import Store from "./store.js";
     hotspots.forEach(spot => {
       const anchor = document.createElement('div');
       anchor.className = 'hotspot' + (isActive ? '' : ' layer-hidden');
-      anchor.dataset.layer = layerId;
+      anchor.dataset.layer    = layerId;
+      anchor.dataset.spotTop  = spot.top;
+      anchor.dataset.spotLeft = spot.left;
       applyPositionForLayer(anchor, spot.top, spot.left, layerId);
 
       const btn = document.createElement('button');
@@ -187,15 +189,10 @@ import Store from "./store.js";
     }
   });
 
-  /* ── Reposition on resize ───────────────────────────────────── */
+  /* ── Reposition on resize — reads from data attrs, no Firestore ─ */
   window.addEventListener('resize', () => {
-    document.querySelectorAll('.hotspot[data-layer="upper"]').forEach((el, i) => {
-      const spot = cache.upper[i];
-      if (spot) applyPositionForLayer(el, spot.top, spot.left, 'upper');
-    });
-    document.querySelectorAll('.hotspot[data-layer="lower"]').forEach((el, i) => {
-      const spot = cache.lower[i];
-      if (spot) applyPositionForLayer(el, spot.top, spot.left, 'lower');
+    mapWrapper.querySelectorAll('.hotspot[data-spot-top]').forEach(el => {
+      applyPositionForLayer(el, el.dataset.spotTop, el.dataset.spotLeft, el.dataset.layer);
     });
   });
 

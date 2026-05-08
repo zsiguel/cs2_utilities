@@ -27,6 +27,7 @@ html, body { height: 100%; overflow: hidden; }
   padding: .35rem .9rem; cursor: pointer;
   background: transparent; color: var(--text-mid);
   transition: color .15s, border-color .15s, background .15s;
+  text-decoration: none; display: inline-block;
 }
 .topbar-btn:hover         { color: var(--gold); border-color: var(--gold-dim); }
 .topbar-btn.danger:hover  { color: var(--red);  border-color: var(--red); }
@@ -38,6 +39,7 @@ html, body { height: 100%; overflow: hidden; }
   display: grid;
   grid-template-columns: 1fr 360px;
   min-height: 0;
+  max-height: 100%;
   overflow: hidden;
 }
 
@@ -118,11 +120,15 @@ html, body { height: 100%; overflow: hidden; }
   display: flex; align-items: center; justify-content: center;
 }
 
-/* ── Sidebar panel ──────────────────────────────────────────── */
+/* ── Sidebar ────────────────────────────────────────────────── */
 .sidebar {
   border-left: 1px solid var(--border);
   display: flex; flex-direction: column;
-  background: var(--panel); overflow-y: auto;
+  background: var(--panel);
+  overflow-y: auto;
+  /* Need a height anchor so child max-heights are respected */
+  min-height: 0;
+  height: 100%;
 }
 
 .sidebar-section {
@@ -139,7 +145,6 @@ html, body { height: 100%; overflow: hidden; }
 }
 .sidebar-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-/* empty state */
 .empty-state {
   color: var(--text-dim);
   font-family: 'Barlow Condensed', sans-serif;
@@ -173,8 +178,18 @@ html, body { height: 100%; overflow: hidden; }
 .field select option { background: var(--surface); }
 .field textarea { min-height: 60px; }
 
-/* ── Utility list in sidebar ────────────────────────────────── */
-.util-list { display: flex; flex-direction: column; gap: .4rem; }
+/* ── Utility list ───────────────────────────────────────────── */
+.util-list {
+  display: flex; flex-direction: column; gap: .4rem;
+  max-height: 175px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-dim) var(--surface);
+}
+.util-list::-webkit-scrollbar { width: 4px; }
+.util-list::-webkit-scrollbar-track { background: var(--surface); }
+.util-list::-webkit-scrollbar-thumb { background: var(--gold-dim); }
+.util-list::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 
 .util-row {
   display: flex; align-items: center; gap: .6rem;
@@ -185,9 +200,7 @@ html, body { height: 100%; overflow: hidden; }
 .util-row:hover { border-color: var(--gold-dim); }
 .util-row.selected { border-color: var(--gold); background: var(--gold-glow); }
 
-.util-row-dot {
-  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
-}
+.util-row-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 .util-row-name {
   font-family: 'Barlow Condensed', sans-serif;
   font-size: .8rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
@@ -196,12 +209,11 @@ html, body { height: 100%; overflow: hidden; }
 .util-row-del {
   background: none; border: none; cursor: pointer;
   color: var(--text-dim); font-size: .9rem; line-height: 1;
-  padding: .1rem .2rem;
-  transition: color .12s;
+  padding: .1rem .2rem; transition: color .12s;
 }
 .util-row-del:hover { color: var(--red); }
 
-/* ── Action buttons ─────────────────────────────────────────── */
+/* ── Buttons ────────────────────────────────────────────────── */
 .btn-row { display: flex; gap: .5rem; margin-top: .6rem; flex-wrap: wrap; }
 
 .btn {
@@ -211,16 +223,26 @@ html, body { height: 100%; overflow: hidden; }
   padding: .4rem .9rem; border: 1px solid; cursor: pointer;
   background: transparent; transition: background .15s, color .15s;
 }
-.btn-gold    { color: var(--gold);   border-color: var(--gold-dim); }
+.btn-gold   { color: var(--gold);  border-color: var(--gold-dim); }
 .btn-gold:hover  { background: var(--gold-glow); }
-.btn-danger  { color: var(--red);    border-color: var(--red); }
+.btn-danger { color: var(--red);   border-color: var(--red); }
 .btn-danger:hover { background: rgba(192,56,40,.1); }
-.btn-teal    { color: var(--teal);   border-color: var(--teal); }
+.btn-teal   { color: var(--teal);  border-color: var(--teal); }
 .btn-teal:hover  { background: rgba(40,160,152,.1); }
-.btn-full { width: 100%; justify-content: center; text-align: center; }
+.btn-full { width: 100%; text-align: center; }
 
-/* ── Hotspot list (left panel overview) ─────────────────────── */
-.spot-list { display: flex; flex-direction: column; gap: .4rem; }
+/* ── Spot list ──────────────────────────────────────────────── */
+.spot-list {
+  display: flex; flex-direction: column; gap: .4rem;
+  max-height: 175px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-dim) var(--surface);
+}
+.spot-list::-webkit-scrollbar { width: 4px; }
+.spot-list::-webkit-scrollbar-track { background: var(--surface); }
+.spot-list::-webkit-scrollbar-thumb { background: var(--gold-dim); }
+.spot-list::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 
 .spot-row {
   display: flex; align-items: center; gap: .6rem;
@@ -228,8 +250,8 @@ html, body { height: 100%; overflow: hidden; }
   background: var(--surface); border: 1px solid var(--border);
   cursor: pointer; transition: border-color .12s;
 }
-.spot-row:hover        { border-color: var(--gold-dim); }
-.spot-row.active       { border-color: var(--gold); background: var(--gold-glow); }
+.spot-row:hover  { border-color: var(--gold-dim); }
+.spot-row.active { border-color: var(--gold); background: var(--gold-glow); }
 
 .spot-row-name {
   font-family: 'Barlow Condensed', sans-serif;
@@ -286,17 +308,13 @@ html, body { height: 100%; overflow: hidden; }
   display: flex; flex-direction: column;
   overflow-x: hidden;
 }
-
-/* override the html/body height lock for lobby view */
 body.lobby-active { overflow-y: auto; }
 
-/* ── Lobby header ───────────────────────────────────────────── */
 .lobby-header {
   padding: 2.5rem 4rem 1.5rem;
   border-bottom: 1px solid var(--border);
   display: flex; align-items: flex-end; gap: 2rem;
 }
-
 .logo-eyebrow {
   font-family: 'Barlow Condensed', sans-serif;
   font-size: .7rem; font-weight: 600;
@@ -315,14 +333,13 @@ body.lobby-active { overflow-y: auto; }
   color: var(--text-mid); letter-spacing: .12em;
   text-transform: uppercase; margin-top: .5rem;
 }
-
 .header-rule {
   flex: 1; height: 1px;
   background: linear-gradient(90deg, var(--molly-clr) 0%, transparent 100%);
   margin-bottom: .6rem;
 }
 
-/* ── Map grid (reused from index) ───────────────────────────── */
+/* ── Lobby map grid ─────────────────────────────────────────── */
 .map-grid {
   padding: 0 4rem 2rem;
   display: grid;
@@ -366,7 +383,6 @@ body.lobby-active { overflow-y: auto; }
   position: absolute; inset: 0;
   background: linear-gradient(to top, rgba(0,0,0,.92) 0%, rgba(0,0,0,.3) 50%, transparent 100%);
 }
-
 .map-card-body {
   position: absolute; bottom:0; left:0; right:0;
   padding: 1.2rem 1rem 1rem;
@@ -401,8 +417,7 @@ body.lobby-active { overflow-y: auto; }
 
 .wip-band {
   position: absolute; top: 18px; right: -28px;
-  background: var(--border);
-  color: var(--text-dim);
+  background: var(--border); color: var(--text-dim);
   font-family: 'Barlow Condensed', sans-serif;
   font-size: .6rem; font-weight: 700;
   letter-spacing: .15em; text-transform: uppercase;
