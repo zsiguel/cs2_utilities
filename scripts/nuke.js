@@ -111,9 +111,9 @@ import Store from "./store.js";
 
       let hideTimer = null;
       function positionAndShow() {
-        const bRect = btn.getBoundingClientRect();
-        const vW    = document.documentElement.clientWidth;
-        const vH    = document.documentElement.clientHeight;
+        const bRect  = btn.getBoundingClientRect();
+        const wRect  = mapWrapper.getBoundingClientRect();
+        const vW     = document.documentElement.clientWidth;
 
         sub.style.top    = '-9999px';
         sub.style.left   = '-9999px';
@@ -126,11 +126,14 @@ import Store from "./store.js";
         const subW = sub.offsetWidth;
         const subH = sub.offsetHeight;
 
+        // Horizontal: open right, flip left if near right edge
         const left = (vW - bRect.right) < subW + 10
           ? bRect.left - subW - 4
           : bRect.right + 4;
 
-        const top = (vH - bRect.bottom) < subH + 10
+        // Vertical: use mapWrapper bottom as the boundary (reliable on all hosts)
+        const spaceBelow = wRect.bottom - bRect.bottom;
+        const top = spaceBelow < subH + 10
           ? bRect.top - subH + bRect.height
           : bRect.top;
 

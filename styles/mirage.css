@@ -38,6 +38,9 @@ html, body { height: 100%; overflow: hidden; }
   position: absolute;
   transform: translate(-50%, -50%);
   z-index: 10;
+  /* isolation prevents hotspot from creating a stacking context
+     that could sit above the fixed overlay */
+  isolation: isolate;
 }
 
 .hotspot-btn {
@@ -98,7 +101,7 @@ html, body { height: 100%; overflow: hidden; }
 
 /* ── Submenu ────────────────────────────────────────────────── */
 .submenu {
-  position: absolute;
+  position: fixed; /* set by JS, but declaring here as default */
   min-width: 210px;
   background: rgba(10,12,15,.96);
   border: 1px solid var(--gold-dim);
@@ -108,7 +111,7 @@ html, body { height: 100%; overflow: hidden; }
   opacity: 0; pointer-events: none;
   transform: scale(.96) translateY(-4px);
   transition: opacity .18s, transform .18s;
-  z-index: 20;
+  z-index: 2147483647;
 }
 .submenu.visible {
   opacity: 1; pointer-events: all;
