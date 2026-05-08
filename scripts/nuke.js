@@ -55,6 +55,13 @@ import Store from "./store.js";
       btn.className = 'hotspot-btn';
       btn.setAttribute('aria-label', spot.label);
 
+      if ((spot.utilities || []).length > 0) {
+        const badge = document.createElement('div');
+        badge.className = 'hotspot-count';
+        badge.textContent = spot.utilities.length;
+        anchor.appendChild(badge);
+      }
+
       const lbl = document.createElement('span');
       lbl.className = 'hotspot-label';
       lbl.textContent = spot.label;

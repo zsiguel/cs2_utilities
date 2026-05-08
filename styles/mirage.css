@@ -1,5 +1,5 @@
 /* ============================================================
-   MIRAGE — interactive map page styles
+   MIRAGE — interactive map page styles (shared by all maps)
    ============================================================ */
 
 html, body { height: 100%; overflow: hidden; }
@@ -82,6 +82,20 @@ html, body { height: 100%; overflow: hidden; }
   text-shadow: 0 1px 4px rgba(0,0,0,.8);
 }
 
+/* ── Hotspot count badge ────────────────────────────────────── */
+.hotspot-count {
+  position: absolute;
+  top: -6px; right: -6px;
+  width: 15px; height: 15px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: #000;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .55rem; font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+
 /* ── Submenu ────────────────────────────────────────────────── */
 .submenu {
   position: absolute;
@@ -149,9 +163,8 @@ html, body { height: 100%; overflow: hidden; }
   border: 1px solid var(--border);
 }
 
-/* ── Admin link in statusbar ────────────────────────────────── */
+/* ── Admin link in topbar ───────────────────────────────────── */
 .admin-link {
-  margin-left: auto;
   text-decoration: none;
   color: var(--text-dim);
   font-family: 'Barlow Condensed', sans-serif;
