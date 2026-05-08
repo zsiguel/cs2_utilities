@@ -91,24 +91,53 @@ import Store from "./store.js";
 
       anchor.appendChild(btn);
       anchor.appendChild(lbl);
-      anchor.appendChild(sub);
+      // sub goes into the fixed overlay, not the anchor
+      subOverlay.appendChild(sub);
       mapWrapper.appendChild(anchor);
 
       /* ── Hover logic ─────────────────────────────────────────── */
       let hideTimer = null;
 
+      function positionAndShow() {
+        const bRect = btn.getBoundingClientRect();
+        const vW    = window.innerWidth;
+        const vH    = window.innerHeight;
+
+        sub.style.top    = '-9999px';
+        sub.style.left   = '-9999px';
+        sub.style.right  = 'auto';
+        sub.style.bottom = 'auto';
+        sub.style.position = 'fixed';
+        sub.style.pointerEvents = 'all';
+        sub.classList.add('visible');
+
+        const subW = sub.offsetWidth;
+        const subH = sub.offsetHeight;
+
+        const left = (vW - bRect.right) < subW + 10
+          ? bRect.left - subW - 4
+          : bRect.right + 4;
+
+        const top = (vH - bRect.bottom) < subH + 10
+          ? bRect.top - subH + bRect.height
+          : bRect.top;
+
+        sub.style.left = Math.max(4, left) + 'px';
+        sub.style.top  = Math.max(4, top)  + 'px';
+      }
+
       function showMenu() {
         clearTimeout(hideTimer);
+
+        // Close previous immediately — don't let it block pointer events
         if (openSubmenu && openSubmenu !== sub) {
           openSubmenu.classList.remove('visible');
+          openSubmenu.style.pointerEvents = 'none';
           openSubmenu.__btn?.classList.remove('open');
+          openSubmenu = null;
         }
-        const aRect = anchor.getBoundingClientRect();
-        const wRect = mapWrapper.getBoundingClientRect();
-        sub.style.left  = (wRect.right - aRect.right) < 230 ? 'auto' : '32px';
-        sub.style.right = (wRect.right - aRect.right) < 230 ? '32px' : 'auto';
-        sub.style.top   = '0';
-        sub.classList.add('visible');
+
+        positionAndShow();
         btn.classList.add('open');
         sub.__btn   = btn;
         openSubmenu = sub;
@@ -117,6 +146,7 @@ import Store from "./store.js";
       function scheduleHide() {
         hideTimer = setTimeout(() => {
           sub.classList.remove('visible');
+          sub.style.pointerEvents = 'none';
           btn.classList.remove('open');
           if (openSubmenu === sub) openSubmenu = null;
         }, 120);
@@ -133,6 +163,11 @@ import Store from "./store.js";
         totalUtils + ' utilit' + (totalUtils === 1 ? 'y' : 'ies') + ' loaded';
     }
   }
+
+  /* Fixed overlay container for submenus — sits above everything, never clipped */
+  const subOverlay = document.createElement('div');
+  subOverlay.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:100;';
+  document.body.appendChild(subOverlay);
 
   /* Close submenu on outside click */
   document.addEventListener('click', e => {
